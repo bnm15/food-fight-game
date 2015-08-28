@@ -1,0 +1,29 @@
+Genre:
+Scrolling Shooter
+
+Name:
+Food Fight!
+It's time to do the thing you've always wanted to do...throw food at things
+
+Goal:
+The first level involves a main character person seemingly scrolling horizontally forward 
+with food being "thrown" (scrolling in the opposite direction) randomly. The player 
+must stop the flying food by throwing their own food at it. If the player is hit by 
+the food 3 times, it is Game Over. If the player can successfully hit 10 food objects, 
+they will be taken to the boss level. The boss level involves a wall of 3 kids each with 
+3 lives that are simultaneously (but not constantly) throwing food at the player. Once 
+all 3 kids have been eliminated, the game has been won.
+
+Basic Mechanics:
+The main player can only scroll up or down. Pressing space will 
+allow the player to throw their own food. I will probably add a cheat such as pressing 
+S will create a shield around the player for 10 seconds. The player will be caged in by 
+the walls.
+
+Levels/Modes:
+The regular, original level only involves respawning food scrolling at a fixed speed 
+from right to left. Once it is hit by the player's weapon, it is eliminated. The second, 
+Boss level is different because it doesn't involve scrolling enemies, but rather a line 
+of fixed enemies that have 3 lives each. In addition, these new boss enemies have shooting 
+capabilities whereas in the first level, the scrolling food itself is the weapon and they 
+cannot shoot.
