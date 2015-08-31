@@ -7,9 +7,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 
 
 /**
@@ -28,12 +25,11 @@ class FoodFight {
 	private Circle myPlayer;
 	private ArrayList<Enemy> enemies;
 	private Group root;
-	private boolean start;
+	private boolean toggle;
 	private int lives;
 	private int level1;
 	private int heat;
 	private boolean boss;
-	private int enemyHeat;
 	private int shieldCounter;
 	private Circle shield;
 	Random randomGenerator = new Random();
@@ -43,10 +39,9 @@ class FoodFight {
 		flyingFood = new ArrayList<>();
 		playerFood = new ArrayList<>();
 		enemies = new ArrayList<>();
-		start = true;
+		toggle = true;
 		lives = 3;
 		level1 = 0;
-		enemyHeat = 180;
 		shieldCounter = 0;
 		heat = 0;
 		boss = false;
@@ -90,28 +85,10 @@ class FoodFight {
 	 * Sets up the user's start screen with instructions
 	 */
 	private void startScreen() {
-		// Title
-		Text title = new Text("Food Fight!");
-		title.setX(Main.WIDTH/2 - title.getBoundsInLocal().getWidth()*2.2);
-		title.setY(Main.HEIGHT/4);
-		title.setFill(Color.DARKMAGENTA);
-		title.setFont(Font.font ("Comic Sans MS", 55));
-		root.getChildren().add(title);
-		// Instructions
-		Text instruct = new Text("Press Up and Down to move, Space to shoot\nHit 10 foods to move on to the Boss level\nYou have 3 lives");
-		instruct.setX(Main.WIDTH/2 - instruct.getBoundsInLocal().getWidth());
-		instruct.setY(Main.HEIGHT/4+75);
-		instruct.setFill(Color.BLACK);
-		instruct.setTextAlignment(TextAlignment.CENTER);
-		instruct.setFont(Font.font ("Comic Sans MS", 30));
-		root.getChildren().add(instruct);
-		// Click to start
-		Text t = new Text("Click anywhere to start");
-		t.setX(Main.WIDTH/2 - t.getBoundsInLocal().getWidth()*1.6);
-		t.setY(Main.HEIGHT/2+100);
-		t.setFill(Color.DARKGREEN);
-		t.setFont(Font.font ("Comic Sans MS", 40));
-		root.getChildren().add(t);
+		ScreenText st = new ScreenText();
+		root.getChildren().add(st.title());
+		root.getChildren().add(st.instructions());
+		root.getChildren().add(st.start());
 	}
 
 	/**
@@ -149,7 +126,8 @@ class FoodFight {
 		for(Enemy e : enemies) {
 			for(PlayerFood pf : playerFood) {
 				Shape intersect = Shape.intersect(e, pf);
-				if (intersect.getBoundsInLocal().getWidth() != -1) {
+				if (intersect.getBoundsInLocal().getWidth() != -1 && root.getChildren().contains(e)) {
+					e.updateColor();
 					e.lives--;
 					pf.setX(-50);
 				}
@@ -170,24 +148,14 @@ class FoodFight {
 	private void gameOver() {
 		root.getChildren().clear();
 		myScene.setFill(Color.BLACK);
-		Text t = new Text("GAME OVER");
-		t.setX(Main.WIDTH/2 - t.getBoundsInLocal().getWidth()*2.2);
-		t.setY(Main.HEIGHT/2);
-		t.setFill(Color.WHITE);
-		t.setFont(Font.font ("Comic Sans MS", 60));
-		root.getChildren().add(t);
+		root.getChildren().add((new ScreenText()).bigWords("GAME OVER"));
 	}
-	
+
 	private void gameWin() {
-		lives = -1;
+		toggle = true;
 		root.getChildren().clear();
 		myScene.setFill(Color.GOLD);
-		Text t = new Text("YOU WIN!!");
-		t.setX(Main.WIDTH/2 - t.getBoundsInLocal().getWidth()*2.2);
-		t.setY(Main.HEIGHT/2);
-		t.setFill(Color.WHITE);
-		t.setFont(Font.font ("Comic Sans MS", 60));
-		root.getChildren().add(t);
+		root.getChildren().add((new ScreenText()).bigWords("YOU WIN!!"));
 	}
 
 	/**
@@ -233,23 +201,21 @@ class FoodFight {
 
 	private void enemyFire() {
 		for(int i = 0; i < 3; i++) {
-			if(enemyHeat == 180) {
-				flyingFood.get(i).setX(enemies.get(i).getCenterX()-enemies.get(i).getRadius());
-				flyingFood.get(i).setY(enemies.get(i).getCenterY());
+			Enemy e = enemies.get(i);
+			if(e.heat == 390-40*i && root.getChildren().contains(e)) {
+				flyingFood.get(i).aim(myPlayer, e);
 			}
-			else if(enemyHeat == 120) {
-				flyingFood.get(i+3).setX(enemies.get(i).getCenterX()-enemies.get(i).getRadius());
-				flyingFood.get(i+3).setY(enemies.get(i).getCenterY());
+			else if(e.heat == 260-40*i && root.getChildren().contains(e)) {
+				flyingFood.get(i+3).aim(myPlayer, e);
 			}
-			else if(enemyHeat == 60){
-				flyingFood.get(i+6).setX(enemies.get(i).getCenterX()-enemies.get(i).getRadius());
-				flyingFood.get(i+6).setY(enemies.get(i).getCenterY());
+			else if(e.heat == 130-40*i && root.getChildren().contains(e)) {
+				flyingFood.get(i+6).aim(myPlayer, e);
 			}
-			else if(enemyHeat == 0){
-				enemyHeat = 181;
+			else if(e.heat == 0-40*i){
+				e.heat = 391;
 			}
+			e.heat--;
 		}
-		enemyHeat--;
 	}
 
 	/**
@@ -259,11 +225,11 @@ class FoodFight {
 	 * but these simple ways work too.
 	 */
 	public void step (double elapsedTime) {
-		if(!start) {
+		if(!toggle) {
 			if(level1 < 10) {
 				for(int i = 0; i < 4; i++) {
 					flyingFood.get(i).offScreen();
-					flyingFood.get(i).move(-1);
+					flyingFood.get(i).move();
 					playerFood.get(i).offScreen();
 					if(playerFood.get(i).getX() != -50) {
 						playerFood.get(i).move(1);
@@ -282,14 +248,15 @@ class FoodFight {
 				}
 				enemyFire();
 				for(FlyingFood ff : flyingFood) {
-					ff.move(-1);
+					ff.move();
+					ff.enemyRespawn();
 				}
 				checkEnemyHit();
 			}
+			checkPlayerHit();
+			checkFoodHit();
+			heat--;
 		}
-		checkPlayerHit();
-		checkFoodHit();
-		heat--;
 	}
 
 
@@ -312,8 +279,7 @@ class FoodFight {
 			for(PlayerFood pf : playerFood) {
 				if(pf.getX() == -50 && heat <= 0) {
 					heat = 40;
-					pf.setX(myPlayer.getCenterX()+myPlayer.getRadius());
-					pf.setY(myPlayer.getCenterY());
+					pf.shoot(myPlayer);
 					break;
 				}
 			}
@@ -323,9 +289,11 @@ class FoodFight {
 			break;
 		case S:
 			shieldCounter = 600;
-			shield.setCenterX(myPlayer.getCenterX());
-			shield.setCenterY(myPlayer.getCenterY());
-			root.getChildren().add(shield);
+			if(!root.getChildren().contains(shield)) {
+				shield.setCenterX(myPlayer.getCenterX());
+				shield.setCenterY(myPlayer.getCenterY());
+				root.getChildren().add(shield);
+			}
 			break;
 		case X:
 			for(Enemy e : enemies){
@@ -338,8 +306,8 @@ class FoodFight {
 
 	// What to do each time a key is pressed
 	private void handleMouseInput (double x, double y) {
-		if (start) {
-			start = false;
+		if (toggle) {
+			toggle = false;
 			root.getChildren().clear();
 			root.getChildren().add(myPlayer);
 			root.getChildren().addAll(flyingFood);

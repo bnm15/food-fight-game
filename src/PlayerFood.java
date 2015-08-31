@@ -1,3 +1,4 @@
+import javafx.scene.shape.Circle;
 
 public class PlayerFood extends Food {
 
@@ -10,6 +11,12 @@ public class PlayerFood extends Food {
 			this.setFill(ranColor());
 			this.setX(-50);
 		}
+	}
+	
+	public void shoot(Circle player) {
+		this.setX(player.getCenterX()+player.getRadius());
+		this.setY(player.getCenterY());
+		this.setFill(ranColor());
 	}
 
 }
