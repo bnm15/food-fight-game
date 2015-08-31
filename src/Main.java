@@ -12,7 +12,7 @@ import javafx.util.Duration;
  * @author Brenna Milligan
  */
 public class Main extends Application {
-    public static final int WIDTH = 1000;
+    public static final int WIDTH = 900;
     public static final int HEIGHT = 500;
     public static final int FRAMES_PER_SECOND = 60;
     private static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
