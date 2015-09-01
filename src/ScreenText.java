@@ -45,5 +45,14 @@ public class ScreenText extends Text {
 		t.setFont(Font.font ("Comic Sans MS", 60));
 		return t;
 	}
+	
+	public Text counter(String text, int count, int x) {
+		Text t = new Text(text + count);
+		t.setX(x);
+		t.setY(50);
+		t.setFill(Color.BLACK);
+		t.setFont(Font.font ("Comic Sans MS", 20));
+		return t;
+	}
 
 }

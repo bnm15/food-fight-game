@@ -31,21 +31,19 @@ public class FlyingFood extends Food {
 	}
 
 	public void enemyRespawn() {
-		if(this.getX() < -50 || this.getY() < -50 || this.getY() > Main.HEIGHT+50) {
+		if(this.getX() < -100 || this.getY() < -100 || this.getY() > Main.HEIGHT+100) {
 			this.setX(-50);
 		}
 	}
 
 	public void aim(Circle player, Circle enemy) {
-
 		double opp = -player.getCenterY()+enemy.getCenterY();
 		double adj = enemy.getCenterX()-player.getCenterX();
 		double angle = Math.atan(opp/adj);
-		xDirection = -2*Math.cos(angle);
-		yDirection = -2*Math.sin(angle);
+		xDirection = -3*Math.cos(angle);
+		yDirection = -3*Math.sin(angle);
 		this.setX(enemy.getCenterX()-enemy.getRadius());
 		this.setY(enemy.getCenterY());
-		this.getTransforms().add(new Rotate(angle*180/Math.PI, this.getX() + this.getWidth()/2, this.getY() + this.getHeight()/2));
 	}
 
 }

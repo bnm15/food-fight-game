@@ -7,6 +7,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
 
 
 /**
@@ -32,6 +33,8 @@ class FoodFight {
 	private boolean boss;
 	private int shieldCounter;
 	private Circle shield;
+	private Text score;
+	private Text lifeCounter;
 	Random randomGenerator = new Random();
 
 
@@ -43,6 +46,8 @@ class FoodFight {
 		lives = 3;
 		level1 = 0;
 		shieldCounter = 0;
+		score = (new ScreenText()).counter("Score: ", level1, Main.WIDTH - 110);
+		lifeCounter = (new ScreenText()).counter("Lives: ", lives, 35);
 		heat = 0;
 		boss = false;
 		myPlayer = new Circle(100, Main.HEIGHT/2, 40, Color.BROWN);
@@ -197,6 +202,7 @@ class FoodFight {
 		}
 		root.getChildren().addAll(flyingFood);
 		level1++;
+		root.getChildren().remove(score);
 	}
 
 	private void enemyFire() {
@@ -217,6 +223,19 @@ class FoodFight {
 			e.heat--;
 		}
 	}
+	
+	private void updateScore() {
+		root.getChildren().remove(score);
+		score.setText("Score: " + level1);
+		root.getChildren().add(score);
+	}
+	
+	private void updateLives() {
+		root.getChildren().remove(lifeCounter);
+		lifeCounter.setText("Lives: " + lives);
+		root.getChildren().add(lifeCounter);
+		
+	}
 
 	/**
 	 * Change properties of shapes to animate them
@@ -226,7 +245,9 @@ class FoodFight {
 	 */
 	public void step (double elapsedTime) {
 		if(!toggle) {
+			updateLives();
 			if(level1 < 10) {
+				updateScore();
 				for(int i = 0; i < 4; i++) {
 					flyingFood.get(i).offScreen();
 					flyingFood.get(i).move();
@@ -312,6 +333,7 @@ class FoodFight {
 			root.getChildren().add(myPlayer);
 			root.getChildren().addAll(flyingFood);
 			root.getChildren().addAll(playerFood);
+			root.getChildren().add(score);
 		}
 	}
 }
