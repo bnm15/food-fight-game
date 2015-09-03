@@ -4,11 +4,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class Food extends Rectangle {
+	public double xDirection;
+	public double yDirection;
 	
 	// Constructor
 	public Food(double x, double y) {
 		super(x, y, 30, 15);
-		this.setFill(ranColor());
+		setFill(ranColor());
+		yDirection = 0;
 	}
 	
 	protected Color ranColor() {
@@ -22,8 +25,9 @@ public class Food extends Rectangle {
 		return result;
 	}
 	
-	protected void move(int direction) {
-		this.setX(this.getX()+direction*5);
+	public void move() {
+		setX(getX()+xDirection);
+		setY(getY()+yDirection);
 	}
 
 }
