@@ -183,7 +183,7 @@ class FoodFight {
 			myScore++;
 		}
 	}
-	
+
 	private void runWithGame() {
 		updateLivesAndScore();
 		myPlayer.setHeat(myPlayer.getHeat()-1);
@@ -194,7 +194,7 @@ class FoodFight {
 			gameOver();
 		}
 	}
-	
+
 	private void level1Mechanics() {
 		for(PlayerFood playerFood : myPlayerFood) {
 			playerFood.act();
@@ -210,17 +210,16 @@ class FoodFight {
 	public void step (double elapsedTime) {
 		if(myScore != -1) {
 			runWithGame();
+			if(myFlyingFood.size() > 4) {
+				bossLevel();
+			}
+			else if(myScore == LEVEL1_MAX_SCORE) {
+				initializeBossLevel();
+			}
+			else if(myScore > -1) {
+				level1Mechanics();
+			}
 		}
-		if(myFlyingFood.size() > 4) {
-			bossLevel();
-		}
-		else if(myScore == LEVEL1_MAX_SCORE) {
-			initializeBossLevel();
-		}
-		else if(myScore > -1) {
-			level1Mechanics();
-		}
-
 	}
 
 	// What to do each time a key is pressed
@@ -254,7 +253,7 @@ class FoodFight {
 			myShield.setHeat(SHIELD_HEAT);
 			break;
 		case X:
-			if(myScore > 10) {
+			if(myScore >= 10) {
 				for(Actor e : myEnemies){
 					e.setLives(0);
 				}
