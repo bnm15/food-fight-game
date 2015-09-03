@@ -40,7 +40,7 @@ public class CollisionHandler {
 				Shape intersect = Shape.intersect(playerFood, flyingFood);
 				if (intersect.getBoundsInLocal().getWidth() != -1 && playerFood.getX() > 0) {
 					playerFood.respawn();
-					flyingFood.respawn();
+					flyingFood.respawn(flyingFoods.size() == FoodFight.BOSS_FOOD_NUM);
 					return true;
 				}
 			}

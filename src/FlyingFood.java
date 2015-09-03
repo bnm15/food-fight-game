@@ -8,24 +8,24 @@ public class FlyingFood extends Food {
 		xDirection = -5;
 	}
 
-	public void respawn() {
-		setFill(ranColor());
-		setX(Main.WIDTH+getX());
-		setY(ranNum((int) Main.HEIGHT-50) + 25);
+	public void respawn(boolean enemy) {
+		if(enemy) {
+			setX(FoodFight.FOOD_DOCK);
+		}
+		else {
+			setFill(ranColor());
+			setX(Main.WIDTH+getX());
+			setY(ranNum((int) Main.HEIGHT-50) + 25);
+		}
 	}
 
 	public boolean isOffScreen() {
-		return (getX() <= -30 || getY() < -50 || getY() > Main.HEIGHT+50);
+		return (getX() <= -15 || getY() < -5 || getY() > Main.HEIGHT+5);
 	}
 
 	public void act(boolean enemy) {
 		if(isOffScreen()) {
-			if(enemy) {
-				setX(FoodFight.FOOD_DOCK);
-			}
-			else {
-				respawn();
-			}
+			respawn(enemy);
 		}
 		else {
 			move();

@@ -21,7 +21,8 @@ class FoodFight {
 	public static final int ENEMY_GUN_HEAT = 180;
 	public static final int SHIELD_HEAT = 300;
 	public static final int LEVEL1_MAX_SCORE = 10;
-	public static final int NUMBER_OF_FOOD = 4;
+	public static final int LEVEL1_FOOD_NUM = 4;
+	public static final int BOSS_FOOD_NUM = 9;
 	public static final int NUMBER_OF_ENEMIES = 3;
 
 	private Scene myScene;
@@ -45,7 +46,7 @@ class FoodFight {
 		myScoreBoard = new ScreenText().counter("Score: ", myScore, Main.WIDTH - 110);
 		myLifeBoard = new ScreenText().counter("Lives: ", myPlayer.getLives(), 35);
 		myShield = new Shield();
-		for(int i = 0; i < NUMBER_OF_FOOD; i++) {
+		for(int i = 0; i < LEVEL1_FOOD_NUM; i++) {
 			myFlyingFood.add(new FlyingFood(Main.WIDTH*(4+i)/4+50));
 			myPlayerFood.add(new PlayerFood(FOOD_DOCK, myPlayer.getCenterY()));
 			if(i < NUMBER_OF_ENEMIES) {
@@ -97,13 +98,19 @@ class FoodFight {
 			playerFood.setX(FOOD_DOCK);
 		}
 		root.getChildren().addAll(myPlayerFood);
-		for(int i = 0; i < 5; i++) {
+		for(int i = 0; i < BOSS_FOOD_NUM-LEVEL1_FOOD_NUM; i++) {
 			if(i < myFlyingFood.size()) {
 				myFlyingFood.get(i).setX(FOOD_DOCK);
 			}
 			myFlyingFood.add(new FlyingFood(FOOD_DOCK));
 		}
 		root.getChildren().addAll(myFlyingFood);
+		root.getChildren().add(myLifeBoard);
+		root.getChildren().add(myScoreBoard);
+	}
+	
+	private boolean isBossLevel() {
+		return myFlyingFood.size() == BOSS_FOOD_NUM;
 	}
 
 	private void bossLevel() {
@@ -112,7 +119,7 @@ class FoodFight {
 			playerFood.act();
 		}
 		for(FlyingFood flyingFood : myFlyingFood) {
-			flyingFood.act(true);
+			flyingFood.act(isBossLevel());
 		}
 		int sum = 0;
 		for(Actor enemy : myEnemies) {
@@ -163,12 +170,8 @@ class FoodFight {
 	}
 
 	private void updateLivesAndScore() {
-		root.getChildren().remove(myLifeBoard);
 		myLifeBoard.setText("Lives: " + myPlayer.getLives());
-		root.getChildren().add(myLifeBoard);
-		root.getChildren().remove(myScoreBoard);
 		myScoreBoard.setText("Score: " + myScore);
-		root.getChildren().add(myScoreBoard);
 	}
 
 	private void handleCollisions() {
@@ -180,7 +183,7 @@ class FoodFight {
 			myScore++;
 		}
 		if(myScore > LEVEL1_MAX_SCORE && collisions.enemyHit(myEnemies, myPlayerFood)) {
-			myScore++;
+			myScore += 3;
 		}
 	}
 
@@ -200,7 +203,7 @@ class FoodFight {
 			playerFood.act();
 		}
 		for(FlyingFood flyingFood : myFlyingFood) {
-			flyingFood.act(false);
+			flyingFood.act(isBossLevel());
 		}
 	}
 

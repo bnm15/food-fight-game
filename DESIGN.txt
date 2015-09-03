@@ -18,7 +18,7 @@ Basic Mechanics:
 The main player can only scroll up or down. Pressing space will 
 allow the player to throw their own food.
 	Cheats:
-		Pressing S will create a shield to protect you from flying food for 10-ish seconds.
+		Pressing S will create a shield to protect you from flying food for 6-ish seconds.
 		Pressing Z will complete level 1 for you and take you to the boss level.
 		Pressing X will win the boss level for you, but only if you are on the boss level.
 Level 1 involves food scrolling at a random height and flying only on a horizontal line.
