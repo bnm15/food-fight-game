@@ -6,12 +6,7 @@ Food Fight!
 It's time to do the thing you've always wanted to do...throw food at things
 
 Goal:
-The first level involves a main character person with food being "thrown" (scrolling left) randomly. The player 
-must stop the flying food by throwing their own food at it. If the player is hit by 
-the food 3 times, it is Game Over. If the player can successfully hit 10 food objects, 
-they will be taken to the boss level. The boss level involves a wall of 3 kids each with 
-3 lives that are simultaneously (but not constantly) throwing food at the player, towards the location of the player. Once 
-all 3 kids have been eliminated, the game has been won.
+The first level involves a main character with food being "thrown" (scrolling left) at random heights. The player must stop the flying food by throwing their own food at it. If the player is hit by the food 3 times, it is Game Over. If the player can successfully hit 10 food objects, they are taken to the boss level. The boss level involves a wall of 3 kids, each with 3 lives, that are simultaneously throwing food aimed at the center of the player. Once all 3 kids have been eliminated, the game as been won.
 The player starts off with 3 lives, and those lives are replenished to 3 when the boss level is reached.
 
 Basic Mechanics:
@@ -19,13 +14,13 @@ The main player can only scroll up or down. Pressing space will
 allow the player to throw their own food.
 	Cheats:
 		Pressing S will create a shield to protect you from flying food for 6-ish seconds.
-		Pressing Z will complete level 1 for you and take you to the boss level.
+		Pressing Z will complete level 1 for you and take you to the boss level after the splash screen is exited.
 		Pressing X will win the boss level for you, but only if you are on the boss level.
 Level 1 involves food scrolling at a random height and flying only on a horizontal line.
 The Boss level involves kids that are throwing food, but the food is aiming towards where the player
-was at that point in time. It is a little harder to escape, but at the same time the food is moving a bit more slowly
+was at that point in time. It is a little harder for the player to escape fire, but at the same time the food is moving a bit more slowly
 (3px at a time instead of 5px in level 1) so it is not impossible.
-The score is computed by how many thrown foods you hit in addition to how many times you hit the enemy. Higher scores are better.
+The score is computed by how many thrown foods you hit in addition to how many times you hit the enemy. Food hits are 1 point and enemy hits are 3 points. Higher scores are better.
 
 Levels/Modes:
 The regular, original level only involves respawning food scrolling at a fixed speed 

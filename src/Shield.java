@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 public class Shield extends Actor {
 
     public static final int RADIUS = Player.RADIUS * 4 / 3;
-    public static final int MAX_HEAT = 300;
+    public static final int MAX_HEAT = Main.FRAMES_PER_SECOND * 10;
 
     private Player myPlayer;
 
