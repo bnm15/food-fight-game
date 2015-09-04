@@ -58,7 +58,6 @@ class FoodFight {
         // Create a place to see the shapes
         myScene = new Scene(root, width, height, Color.WHITE);
         splashScreen();
-        // Respond to input
         myScene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
         myScene.setOnMouseClicked(e -> handleMouseInput(e.getX(), e.getY()));
         return myScene;
@@ -153,15 +152,23 @@ class FoodFight {
     private void enemyFire () {
         for (int i = 0; i < NUMBER_OF_ENEMIES; i++) {
             Enemy enemy = myEnemies.get(i);
+            // Rotates through 4 timer markers because that produces 3 time intervals
+            // 1 time interval per enemy so shooting is staggered
             for (int j = 0; j <= NUMBER_OF_ENEMIES; j++) {
+                // Setting up the timer marker
                 int shootTime = Enemy.MAX_HEAT * j;
+                // Setting up the stagger effect depending on the enemy
                 int stagger = Enemy.MAX_HEAT / NUMBER_OF_ENEMIES * i;
+                // If that enemy's heat matches one of it's four markers
                 if (enemy.getMyHeat() == shootTime - stagger) {
+                    // Check the reset marker otherwise aim
                     if (j == 0) {
                         enemy.setMyHeat(enemy.getMyHeat() + Enemy.MAX_HEAT * NUMBER_OF_ENEMIES);
                     }
                     else if (!enemy.isDead()) {
-                        myFlyingFood.get(i + 3 * j - 3).aim(myPlayer, enemy);
+                        // Choose one of 3 specific foods for each enemy
+                        // 9 foods in total
+                        myFlyingFood.get(i + NUMBER_OF_ENEMIES * (j - 1)).aim(myPlayer, enemy);
                     }
                 }
             }
@@ -185,7 +192,6 @@ class FoodFight {
         myPlayer.setMyScore(-1);
     }
 
-    // What to do each time a key is pressed
     private void handleKeyInput (KeyCode code) {
         switch (code) {
             case UP:
@@ -227,7 +233,6 @@ class FoodFight {
         }
     }
 
-    // What to do each time the mouse is pressed
     private void handleMouseInput (double x, double y) {
         if (myPlayer.getMyScore() == -1) {
             myPlayer.setMyScore(0);

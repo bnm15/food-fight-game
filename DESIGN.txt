@@ -35,3 +35,14 @@ Boss level is different because it doesn't involve scrolling enemies, but rather
 of fixed enemies that have 3 lives each. In addition, these new boss enemies have shooting 
 capabilities (that aim for the player) whereas in the first level, the scrolling food itself is the weapon and they
 travel only in a horizontal line.
+
+Adding Features:
+Almost all of my constants are easily customizable because I put them at the top of each class as a final variable.
+Because of this, they are very easy to edit and suit to your own needs.
+
+Design Choices:
+In this project, I could have spent a lot of time developing the graphics and animation, but I chose to spend
+my time getting the game functional and up to speed with what the project calls for, and then worked on my code.
+I wouldn't say I'm an expert coder, so it took me more than half the time I spent working on this project
+simply refactoring my code. While it took a lot of time, I think I made a lot of progress and learned a lot
+about how to change my own coding habits.
