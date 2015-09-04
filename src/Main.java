@@ -1,3 +1,4 @@
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -8,10 +9,11 @@ import javafx.util.Duration;
 
 /**
  * This runs food fight and creates the game for the player.
- * 
+ *
  * @author Brenna Milligan
  */
 public class Main extends Application {
+
     public static final int WIDTH = 900;
     public static final int HEIGHT = 500;
     public static final int FRAMES_PER_SECOND = 60;
@@ -19,7 +21,6 @@ public class Main extends Application {
     private static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
 
     private FoodFight myGame;
-
 
     /**
      * Set things up at the beginning.
@@ -39,7 +40,7 @@ public class Main extends Application {
         KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY),
                                       e -> myGame.step(SECOND_DELAY));
         Timeline animation = new Timeline();
-        animation.setCycleCount(Timeline.INDEFINITE);
+        animation.setCycleCount(Animation.INDEFINITE);
         animation.getKeyFrames().add(frame);
         animation.play();
     }

@@ -1,34 +1,36 @@
 import javafx.scene.shape.Circle;
 
+
 public class PlayerFood extends Food {
 
-	public PlayerFood(double x, double y) {
-		super(x, y);
-		xDirection = 5;
-	}
+    public static final int VELOCITY = 5;
 
-	public void respawn() {
-		setFill(ranColor());
-		setX(FoodFight.FOOD_DOCK);
-	}
-	
-	public boolean isOffScreen() {
-		return (getX() > Main.WIDTH + 50);
-	}
+    public PlayerFood () {
+        super(DOCK, 0);
+        setMyXDirection(VELOCITY);
+    }
 
-	public void shoot(Circle player) {
-		setX(player.getCenterX()+player.getRadius());
-		setY(player.getCenterY());
-		setFill(ranColor());
-	}
+    public void respawn () {
+        setX(DOCK);
+    }
 
-	public void act() {
-		if(isOffScreen()) {
-			respawn();
-		}
-		else if(getX() != FoodFight.FOOD_DOCK) {
-			move();
-		}
-	}
+    private boolean isOffScreen () {
+        return (getX() > Main.WIDTH + BOUNDS);
+    }
+
+    public void shoot (Circle player) {
+        setFill(ranColor());
+        setX(player.getCenterX() + player.getRadius());
+        setY(player.getCenterY());
+    }
+
+    public void act () {
+        if (isOffScreen()) {
+            respawn();
+        }
+        else if (getX() != DOCK) {
+            move();
+        }
+    }
 
 }

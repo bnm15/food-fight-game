@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -9,275 +8,236 @@ import javafx.scene.text.Text;
 
 /**
  * This is the code for the design and controls of Food Fight
- * 
+ *
  * @author Brenna Milligan
  */
 class FoodFight {
 
-	public static final int FOOD_DOCK = -50;
-	public static final String TITLE = "Food Fight!";
-	public static final int PLAYER_MOVE = 10;
-	public static final int PLAYER_GUN_HEAT = 40;
-	public static final int ENEMY_GUN_HEAT = 180;
-	public static final int SHIELD_HEAT = 300;
-	public static final int LEVEL1_MAX_SCORE = 10;
-	public static final int LEVEL1_FOOD_NUM = 4;
-	public static final int BOSS_FOOD_NUM = 9;
-	public static final int NUMBER_OF_ENEMIES = 3;
+    public static final String TITLE = "Food Fight!";
+    public static final int LEVEL1_MAX_SCORE = 10;
+    public static final int LEVEL1_FOOD_NUM = 4;
+    public static final int BOSS_FOOD_NUM = 9;
+    public static final int NUMBER_OF_ENEMIES = 3;
 
-	private Scene myScene;
-	private Group root;
-	private ArrayList<FlyingFood> myFlyingFood;
-	private ArrayList<PlayerFood> myPlayerFood;
-	private ArrayList<Actor> myEnemies;
-	private Actor myPlayer;
-	private int myScore;
-	private Text myScoreBoard;
-	private Text myLifeBoard;
-	private Shield myShield;
+    private Scene myScene;
+    private Group root;
+    private ArrayList<FlyingFood> myFlyingFood;
+    private ArrayList<PlayerFood> myPlayerFood;
+    private ArrayList<Enemy> myEnemies;
+    private Player myPlayer;
+    private Shield myShield;
+    private Text myScoreBoard;
+    private Text myLifeBoard;
 
+    public FoodFight () {
+        myFlyingFood = new ArrayList<>();
+        myPlayerFood = new ArrayList<>();
+        myEnemies = new ArrayList<>();
+        myPlayer = new Player();
+        myShield = new Shield(myPlayer);
+        myScoreBoard =
+                new ScreenText().counter("Score: " + myPlayer.getMyScore(), Main.WIDTH - 110);
+        myLifeBoard = new ScreenText().counter("Lives: " + myPlayer.getMyLives(), 35);
+        for (int i = 0; i < LEVEL1_FOOD_NUM; i++) {
+            myFlyingFood
+                    .add(new FlyingFood(Main.WIDTH * (LEVEL1_FOOD_NUM + i) / LEVEL1_FOOD_NUM + 50));
+            myPlayerFood.add(new PlayerFood());
+        }
+        for (int i = 0; i < NUMBER_OF_ENEMIES; i++) {
+            myEnemies.add(new Enemy(Main.HEIGHT * (1 + i) / 3 - 75));
+        }
+    }
 
-	public FoodFight() {
-		myFlyingFood = new ArrayList<>();
-		myPlayerFood = new ArrayList<>();
-		myEnemies = new ArrayList<>();
-		myPlayer = new Actor(100, Main.HEIGHT/2, Color.rgb(200, 100, 100), 0);
-		myScore = -1;
-		myScoreBoard = new ScreenText().counter("Score: ", myScore, Main.WIDTH - 110);
-		myLifeBoard = new ScreenText().counter("Lives: ", myPlayer.getLives(), 35);
-		myShield = new Shield();
-		for(int i = 0; i < LEVEL1_FOOD_NUM; i++) {
-			myFlyingFood.add(new FlyingFood(Main.WIDTH*(4+i)/4+50));
-			myPlayerFood.add(new PlayerFood(FOOD_DOCK, myPlayer.getCenterY()));
-			if(i < NUMBER_OF_ENEMIES) {
-				myEnemies.add(new Actor(Main.WIDTH-200, Main.HEIGHT*(1+i)/3-75, Color.BLACK, ENEMY_GUN_HEAT));
-			}
-		}
-	}
+    public String getTitle () {
+        return TITLE;
+    }
 
-	/**
-	 * Returns name of the game.
-	 */
-	public String getTitle () {
-		return TITLE;
-	}
+    public Scene init (int width, int height) {
+        // Create a scene graph to organize the scene
+        root = new Group();
+        // Create a place to see the shapes
+        myScene = new Scene(root, width, height, Color.WHITE);
+        splashScreen();
+        // Respond to input
+        myScene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        myScene.setOnMouseClicked(e -> handleMouseInput(e.getX(), e.getY()));
+        return myScene;
+    }
 
+    private void splashScreen () {
+        ScreenText screenText = new ScreenText();
+        root.getChildren().add(screenText.title());
+        root.getChildren().add(screenText.instructions());
+        root.getChildren().add(screenText.start());
+    }
 
-	/**
-	 * Create the game's scene
-	 */
-	public Scene init (int width, int height) {
-		// Create a scene graph to organize the scene
-		root = new Group();
-		// Create a place to see the shapes
-		myScene = new Scene(root, width, height, Color.WHITE);
-		startScreen();
-		myShield.setVisible(false);
-		// Respond to input
-		myScene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
-		myScene.setOnMouseClicked(e -> handleMouseInput(e.getX(), e.getY()));
-		return myScene;
-	}
+    public void step (double elapsedTime) {
+        if (myPlayer.getMyScore() > -1) {
+            gameLoop();
+            if (isBossLevel()) {
+                bossLevel();
+            }
+            else if (myPlayer.getMyScore() == LEVEL1_MAX_SCORE) {
+                initializeBossLevel();
+            }
+        }
+    }
 
-	private void startScreen() {
-		ScreenText screenText = new ScreenText();
-		root.getChildren().add(screenText.title());
-		root.getChildren().add(screenText.instructions());
-		root.getChildren().add(screenText.start());
-	}
+    private boolean isBossLevel () {
+        return myFlyingFood.size() == BOSS_FOOD_NUM;
+    }
 
-	private void initializeBossLevel() {
-		root.getChildren().clear();
-		myPlayer.setLives(myPlayer.MAX_LIVES);
-		myPlayer.setCenterY(Main.HEIGHT/2);
-		myShield.setCenterY(Main.HEIGHT/2);
-		root.getChildren().add(myPlayer);
-		root.getChildren().addAll(myEnemies);
-		root.getChildren().add(myShield);
-		for(PlayerFood playerFood : myPlayerFood) {
-			playerFood.setX(FOOD_DOCK);
-		}
-		root.getChildren().addAll(myPlayerFood);
-		for(int i = 0; i < BOSS_FOOD_NUM-LEVEL1_FOOD_NUM; i++) {
-			if(i < myFlyingFood.size()) {
-				myFlyingFood.get(i).setX(FOOD_DOCK);
-			}
-			myFlyingFood.add(new FlyingFood(FOOD_DOCK));
-		}
-		root.getChildren().addAll(myFlyingFood);
-		root.getChildren().add(myLifeBoard);
-		root.getChildren().add(myScoreBoard);
-	}
-	
-	private boolean isBossLevel() {
-		return myFlyingFood.size() == BOSS_FOOD_NUM;
-	}
+    private void gameLoop () {
+        for (PlayerFood playerFood : myPlayerFood) {
+            playerFood.act();
+        }
+        for (FlyingFood flyingFood : myFlyingFood) {
+            flyingFood.act(isBossLevel());
+        }
+        updateLivesAndScore();
+        myPlayer.checkHeat();
+        myShield.act();
+        handleCollisions();
+        if (myPlayer.isDead()) {
+            gameOver();
+        }
+    }
 
-	private void bossLevel() {
-		enemyFire();
-		for(PlayerFood playerFood : myPlayerFood) {
-			playerFood.act();
-		}
-		for(FlyingFood flyingFood : myFlyingFood) {
-			flyingFood.act(isBossLevel());
-		}
-		int sum = 0;
-		for(Actor enemy : myEnemies) {
-			sum += enemy.getLives();
-			if(enemy.isDead()) {
-				root.getChildren().remove(enemy);
-			}
-		}
-		if(sum == 0) {
-			gameWin();
-		}
-	}
+    private void updateLivesAndScore () {
+        myLifeBoard.setText("Lives: " + myPlayer.getMyLives());
+        myScoreBoard.setText("Score: " + myPlayer.getMyScore());
+    }
 
-	private void gameOver() {
-		root.getChildren().clear();
-		myScene.setFill(Color.BLACK);
-		root.getChildren().add(new ScreenText().bigWords("GAME OVER", "Score: "+myScore));
-		myScore = -1;
-	}
+    private void handleCollisions () {
+        CollisionHandler collisions = new CollisionHandler(myPlayer);
+        if (myShield.getMyHeat() == 0) {
+            collisions.playerHit(myFlyingFood);
+        }
+        collisions.foodHit(myPlayerFood, myFlyingFood);
+        collisions.enemyHit(myEnemies, myPlayerFood);
+    }
 
-	private void gameWin() {
-		root.getChildren().clear();
-		myScene.setFill(Color.GOLD);
-		root.getChildren().add(new ScreenText().bigWords("YOU WIN!!", "Score: "+myScore));
-		myScore = -1;
-	}
+    private void initializeBossLevel () {
+        root.getChildren().removeAll(myFlyingFood);
+        for (int i = 0; i < BOSS_FOOD_NUM - LEVEL1_FOOD_NUM; i++) {
+            if (i < LEVEL1_FOOD_NUM) {
+                myFlyingFood.get(i).setX(Food.DOCK);
+            }
+            myFlyingFood.add(new FlyingFood(Food.DOCK));
+        }
+        for (PlayerFood playerFood : myPlayerFood) {
+            playerFood.setX(Food.DOCK);
+        }
+        myPlayer.setCenterY(Main.HEIGHT / 2);
+        root.getChildren().addAll(myEnemies);
+        root.getChildren().addAll(myFlyingFood);
+    }
 
-	/**
-	 * Staggered firing from the enemies with different food objects
-	 */
-	private void enemyFire() {
-		for(int i = 0; i < myEnemies.size(); i++) {
-			Actor e = myEnemies.get(i);
-			if(e.getHeat() == 390-40*i && !e.isDead()) {
-				myFlyingFood.get(i).aim(myPlayer, e);
-			}
-			else if(e.getHeat() == 260-40*i && !e.isDead()) {
-				myFlyingFood.get(i+3).aim(myPlayer, e);
-			}
-			else if(e.getHeat() == 130-40*i && !e.isDead()) {
-				myFlyingFood.get(i+6).aim(myPlayer, e);
-			}
-			else if(e.getHeat() == 0-40*i){
-				e.setHeat(391);
-			}
-			e.setHeat(e.getHeat()-1);
-		}
-	}
+    private void bossLevel () {
+        enemyFire();
+        int sum = 0;
+        for (Enemy enemy : myEnemies) {
+            sum += enemy.getMyLives();
+            if (enemy.isDead()) {
+                root.getChildren().remove(enemy);
+            }
+        }
+        if (sum == 0) {
+            gameWin();
+        }
+    }
 
-	private void updateLivesAndScore() {
-		myLifeBoard.setText("Lives: " + myPlayer.getLives());
-		myScoreBoard.setText("Score: " + myScore);
-	}
+    /**
+     * Staggered firing from the enemies with different food objects
+     */
+    private void enemyFire () {
+        for (int i = 0; i < NUMBER_OF_ENEMIES; i++) {
+            Enemy enemy = myEnemies.get(i);
+            for (int j = 0; j <= NUMBER_OF_ENEMIES; j++) {
+                int shootTime = Enemy.MAX_HEAT * j;
+                int stagger = Enemy.MAX_HEAT / NUMBER_OF_ENEMIES * i;
+                if (enemy.getMyHeat() == shootTime - stagger) {
+                    if (j == 0) {
+                        enemy.setMyHeat(enemy.getMyHeat() + Enemy.MAX_HEAT * NUMBER_OF_ENEMIES);
+                    }
+                    else if (!enemy.isDead()) {
+                        myFlyingFood.get(i + 3 * j - 3).aim(myPlayer, enemy);
+                    }
+                }
+            }
+            enemy.setMyHeat(enemy.getMyHeat() - 1);
+        }
+    }
 
-	private void handleCollisions() {
-		CollisionHandler collisions = new CollisionHandler();
-		if(myShield.getHeat() <= 0) {
-			collisions.playerHit(myPlayer, myFlyingFood);
-		}
-		if(collisions.foodHit(myPlayerFood, myFlyingFood)) {
-			myScore++;
-		}
-		if(myScore > LEVEL1_MAX_SCORE && collisions.enemyHit(myEnemies, myPlayerFood)) {
-			myScore += 3;
-		}
-	}
+    private void gameOver () {
+        root.getChildren().clear();
+        myScene.setFill(Color.BLACK);
+        root.getChildren()
+                .add(new ScreenText().bigWords("GAME OVER", "Score: " + myPlayer.getMyScore()));
+        myPlayer.setMyScore(-1);
+    }
 
-	private void runWithGame() {
-		updateLivesAndScore();
-		myPlayer.setHeat(myPlayer.getHeat()-1);
-		handleCollisions();
-		myShield.activate();
-		myShield.setHeat(myShield.getHeat()-1);
-		if(myPlayer.isDead()) {
-			gameOver();
-		}
-	}
+    private void gameWin () {
+        root.getChildren().clear();
+        myScene.setFill(Color.GOLD);
+        root.getChildren()
+                .add(new ScreenText().bigWords("YOU WIN!!", "Score: " + myPlayer.getMyScore()));
+        myPlayer.setMyScore(-1);
+    }
 
-	private void level1Mechanics() {
-		for(PlayerFood playerFood : myPlayerFood) {
-			playerFood.act();
-		}
-		for(FlyingFood flyingFood : myFlyingFood) {
-			flyingFood.act(isBossLevel());
-		}
-	}
+    // What to do each time a key is pressed
+    private void handleKeyInput (KeyCode code) {
+        switch (code) {
+            case UP:
+                if (myPlayer.getCenterY() - myPlayer.getRadius() >= 0) {
+                    myPlayer.setCenterY(myPlayer.getCenterY() - Player.PLAYER_MOVE);
+                }
+                break;
+            case DOWN:
+                if (myPlayer.getCenterY() + myPlayer.getRadius() <= Main.HEIGHT) {
+                    myPlayer.setCenterY(myPlayer.getCenterY() + Player.PLAYER_MOVE);
+                }
+                break;
+            case SPACE:
+                for (PlayerFood playerFood : myPlayerFood) {
+                    if (playerFood.getX() == Food.DOCK && myPlayer.getMyHeat() <= 0) {
+                        myPlayer.setMyHeat(Player.MAX_HEAT);
+                        playerFood.shoot(myPlayer);
+                        break;
+                    }
+                }
+                break;
+            case Z:
+                if (myPlayer.getMyScore() > -1) {
+                    myPlayer.setMyScore(10);
+                }
+                break;
+            case S:
+                myShield.setMyHeat(Shield.MAX_HEAT);
+                break;
+            case X:
+                if (myPlayer.getMyScore() >= 10) {
+                    for (Enemy enemy : myEnemies) {
+                        enemy.setMyLives(0);
+                    }
+                }
+                break;
+            default:
+                // do nothing
+        }
+    }
 
-	/**
-	 * Change properties of shapes to animate them
-	 */
-	public void step (double elapsedTime) {
-		if(myScore != -1) {
-			runWithGame();
-			if(myFlyingFood.size() > 4) {
-				bossLevel();
-			}
-			else if(myScore == LEVEL1_MAX_SCORE) {
-				initializeBossLevel();
-			}
-			else if(myScore > -1) {
-				level1Mechanics();
-			}
-		}
-	}
-
-	// What to do each time a key is pressed
-	private void handleKeyInput (KeyCode code) {
-		switch (code) {
-		case UP:
-			if (myPlayer.getCenterY()-myPlayer.getRadius() >= 0) {
-				myPlayer.setCenterY(myPlayer.getCenterY()-PLAYER_MOVE);
-				myShield.setCenterY(myShield.getCenterY()-PLAYER_MOVE);
-			}
-			break;
-		case DOWN:
-			if (myPlayer.getCenterY()+myPlayer.getRadius() <= Main.HEIGHT) {
-				myPlayer.setCenterY(myPlayer.getCenterY()+PLAYER_MOVE);
-				myShield.setCenterY(myShield.getCenterY()+PLAYER_MOVE);
-			}
-			break;
-		case SPACE:
-			for(PlayerFood playerFood : myPlayerFood) {
-				if(playerFood.getX() == FOOD_DOCK && myPlayer.getHeat() <= 0) {
-					myPlayer.setHeat(PLAYER_GUN_HEAT);
-					playerFood.shoot(myPlayer);
-					break;
-				}
-			}
-			break;
-		case Z:
-			myScore = 10;
-			break;
-		case S:
-			myShield.setHeat(SHIELD_HEAT);
-			break;
-		case X:
-			if(myScore >= 10) {
-				for(Actor e : myEnemies){
-					e.setLives(0);
-				}
-			}
-			break;
-		default:
-			// do nothing
-		}
-	}
-
-	// What to do each time the mouse is pressed
-	private void handleMouseInput (double x, double y) {
-		if (myScore == -1) {
-			myScore++;
-			root.getChildren().clear();
-			root.getChildren().add(myPlayer);
-			root.getChildren().addAll(myFlyingFood);
-			root.getChildren().addAll(myPlayerFood);
-			root.getChildren().add(myScoreBoard);
-			root.getChildren().add(myLifeBoard);
-			root.getChildren().add(myShield);
-		}
-	}
+    // What to do each time the mouse is pressed
+    private void handleMouseInput (double x, double y) {
+        if (myPlayer.getMyScore() == -1) {
+            myPlayer.setMyScore(0);
+            root.getChildren().clear();
+            root.getChildren().add(myPlayer);
+            root.getChildren().addAll(myFlyingFood);
+            root.getChildren().addAll(myPlayerFood);
+            root.getChildren().add(myScoreBoard);
+            root.getChildren().add(myLifeBoard);
+            root.getChildren().add(myShield);
+        }
+    }
 }
