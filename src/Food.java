@@ -1,3 +1,6 @@
+// This entire file is part of my masterpiece.
+// Brenna Milligan
+
 import java.util.Random;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;

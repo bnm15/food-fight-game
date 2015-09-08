@@ -1,3 +1,6 @@
+// This entire file is part of my masterpiece.
+// Brenna Milligan
+
 import javafx.scene.shape.Circle;
 
 
