@@ -27,5 +27,3 @@ Cheat Keys: Press S for a 10-second shield (immunity). Z completes level 1 for y
 Known bugs: None.
 
 Extra features: Boss level, visible shield, bullets that aim (using trigonometry (wow!)) at the player, lives counter, score counter.
-
-Impressions/Suggestions: This was a great introductory project to the class. I can see now how it will involve a lot of self-teaching, and I now understand what Professor Duvall means when he says you could spend weeks or months working on this project, but it's up to you to figure out when good is good enough.
